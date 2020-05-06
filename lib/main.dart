@@ -14,6 +14,7 @@ import 'package:gallery/l10n/gallery_localizations.dart';
 import 'package:gallery/pages/backdrop.dart';
 import 'package:gallery/pages/splash.dart';
 import 'package:gallery/themes/gallery_theme_data.dart';
+import 'studies/shrine/app.dart';
 
 void main() {
   GoogleFonts.config.allowRuntimeFetching = false;
@@ -80,6 +81,7 @@ class RootPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ShrineApp();
     return const ApplyTextOptions(
       child: SplashPage(
         child: Backdrop(),
