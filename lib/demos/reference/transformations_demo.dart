@@ -10,6 +10,7 @@ import 'package:gallery/l10n/gallery_localizations.dart';
 
 import 'transformations_demo_board.dart';
 import 'transformations_demo_edit_board_point.dart';
+import 'transformations_demo_hexagon.dart';
 
 // BEGIN transformationsDemo#1
 
@@ -150,6 +151,7 @@ class _TransformationsDemoState extends State<TransformationsDemo>
                     children: <Widget>[
                       Container(color: Colors.red),
                       Container(color: Colors.blue),
+                      Hexagon(),
                     ],
                   ),
                   /*
