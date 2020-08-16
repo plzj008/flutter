@@ -4,6 +4,7 @@
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:gallery/l10n/gallery_localizations.dart';
 
@@ -144,6 +145,14 @@ class _TransformationsDemoState extends State<TransformationsDemo>
                   ),
                   minScale: 0.01,
                   onInteractionStart: _onScaleStart,
+                  child: _HexagonalLayout(
+                    childConstraints: BoxConstraints.loose(Size(100, 100)),
+                    children: <Widget>[
+                      Container(color: Colors.red),
+                      Container(color: Colors.blue),
+                    ],
+                  ),
+                  /*
                   child: SizedBox.expand(
                     child: CustomPaint(
                       size: _board.size,
@@ -152,6 +161,7 @@ class _TransformationsDemoState extends State<TransformationsDemo>
                       ),
                     ),
                   ),
+                  */
                 ),
               ),
             );
@@ -241,6 +251,151 @@ class _BoardPainter extends CustomPainter {
   bool shouldRepaint(_BoardPainter oldDelegate) {
     return oldDelegate.board != board;
   }
+}
+
+class _HexagonalLayout extends MultiChildRenderObjectWidget {
+  _HexagonalLayout({
+    Key key,
+    @required List<Widget> children,
+    @required this.childConstraints,
+  }) : assert(children != null),
+       assert(childConstraints != null),
+       super(key: key, children: children);
+
+  final BoxConstraints childConstraints;
+
+  @override
+  _HexagonalLayoutRenderBox createRenderObject(BuildContext context) {
+    return _HexagonalLayoutRenderBox(
+      childConstraints: childConstraints,
+    );
+  }
+
+  @override
+  void updateRenderObject(BuildContext context, _HexagonalLayoutRenderBox renderObject) {
+    renderObject
+      ..childConstraints = childConstraints;
+  }
+
+  /*
+  @override
+  _HexagonalLayoutElement createElement() => _HexagonalLayoutElement(this);
+  */
+}
+
+  /*
+class _HexagonalLayoutElement extends MultiChildRenderObjectElement {
+  _HexagonalLayoutElement(
+    MultiChildRenderObjectWidget widget,
+  ) : super(widget);
+
+  static bool _shouldPaint(Element child) {
+    return true;//(child.renderObject.parentData as MultiChildLayoutParentData).shouldPaint;
+  }
+
+  @override
+  void debugVisitOnstageChildren(ElementVisitor visitor) {
+    children.where(_shouldPaint).forEach(visitor);
+  }
+}
+  */
+
+class _HexagonalLayoutRenderBox extends RenderBox with ContainerRenderObjectMixin<RenderBox, MultiChildLayoutParentData> {
+  _HexagonalLayoutRenderBox({
+    BoxConstraints childConstraints,
+  }) : assert(childConstraints != null),
+       _childConstraints = childConstraints,
+       super();
+
+  BoxConstraints _childConstraints;
+  set childConstraints(BoxConstraints value) {
+    if (value == _childConstraints) {
+      return;
+    }
+    _childConstraints = value;
+    markNeedsLayout();
+  }
+
+  @override
+  void performLayout() {
+    visitChildren((RenderObject renderObjectChild) {
+      final RenderBox child = renderObjectChild as RenderBox;
+      child.layout(constraints.loosen(), parentUsesSize: true);
+      final MultiChildLayoutParentData childParentData = child.parentData as MultiChildLayoutParentData;
+      // TODO(justinmc): This would be where you place in a hexagon tile slot.
+      childParentData.offset = Offset.zero;
+    });
+
+    // TODO(justinmc): This is where you'd set the overall size.
+    size = constraints.constrain(const Size(500, 500));
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    visitChildren((RenderObject renderObjectChild) {
+      final RenderBox child = renderObjectChild as RenderBox;
+      final MultiChildLayoutParentData childParentData = child.parentData as MultiChildLayoutParentData;
+      /*
+      if (!childParentData.shouldPaint) {
+        return;
+      }
+      */
+
+      context.paintChild(child, childParentData.offset + offset);
+    });
+  }
+
+  @override
+  void setupParentData(RenderBox child) {
+    if (child.parentData is! MultiChildLayoutParentData) {
+      child.parentData = MultiChildLayoutParentData();
+    }
+  }
+
+  /*
+  @override
+  bool hitTestChildren(BoxHitTestResult result, { Offset position }) {
+    // The x, y parameters have the top left of the node's box as the origin.
+    RenderBox child = lastChild;
+    while (child != null) {
+      final MultiChildLayoutParentData childParentData = child.parentData as MultiChildLayoutParentData;
+
+      // Don't hit test children aren't shown.
+      /*
+      if (!childParentData.shouldPaint) {
+        child = childParentData.previousSibling;
+        continue;
+      }
+      */
+
+      final bool isHit = result.addWithPaintOffset(
+        offset: childParentData.offset,
+        position: position,
+        hitTest: (BoxHitTestResult result, Offset transformed) {
+          assert(transformed == position - childParentData.offset);
+          return child.hitTest(result, position: transformed);
+        },
+      );
+      if (isHit)
+        return true;
+      child = childParentData.previousSibling;
+    }
+    return false;
+  }
+  */
+
+  // Visit only the children that should be painted.
+    /*
+  @override
+  void visitChildrenForSemantics(RenderObjectVisitor visitor) {
+    visitChildren((RenderObject renderObjectChild) {
+      final RenderBox child = renderObjectChild as RenderBox;
+      final MultiChildLayoutParentData childParentData = child.parentData as MultiChildLayoutParentData;
+      //if (childParentData.shouldPaint) {
+      visitor(renderObjectChild);
+    });
+  }
+  */
 }
 
 // END
