@@ -1,14 +1,21 @@
+// Copyright 2019 The Flutter team. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:gallery/data/gallery_options.dart';
+import 'package:gallery/deferred_widget.dart';
 import 'package:gallery/main.dart';
-import 'package:gallery/pages/demo.dart';
-import 'package:gallery/pages/home.dart';
-import 'package:gallery/studies/crane/app.dart';
-import 'package:gallery/studies/fortnightly/app.dart';
-import 'package:gallery/studies/rally/app.dart';
-import 'package:gallery/studies/reply/app.dart';
-import 'package:gallery/studies/shrine/app.dart';
-import 'package:gallery/studies/starter/app.dart';
+import 'package:gallery/pages/demo.dart' deferred as demo;
+//import 'package:gallery/pages/home.dart';
+import 'package:gallery/studies/crane/app.dart' deferred as crane;
+import 'package:gallery/studies/fortnightly/app.dart' deferred as fortnightly;
+import 'package:gallery/studies/rally/app.dart' deferred as rally;
+import 'package:gallery/studies/reply/app.dart' deferred as reply;
+import 'package:gallery/studies/shrine/app.dart' deferred as shrine;
+import 'package:gallery/studies/starter/app.dart' deferred as starter;
 
 typedef PathWidgetBuilder = Widget Function(BuildContext, String);
 
@@ -39,35 +46,43 @@ class RouteConfiguration {
   /// take priority.
   static List<Path> paths = [
     Path(
-      r'^' + DemoPage.baseRoute + r'/([\w-]+)$',
-      (context, match) => DemoPage(slug: match),
+      r'^/demo' + r'/([\w-]+)$',
+      (context, match) =>
+          DeferredWidget(demo.loadLibrary, () => demo.DemoPage(slug: match)),
     ),
     Path(
-      r'^' + RallyApp.homeRoute,
-      (context, match) => const StudyWrapper(study: RallyApp()),
+      r'^/rally',
+      (context, match) => DeferredWidget(
+          rally.loadLibrary, () => StudyWrapper(study: rally.RallyApp())),
     ),
     Path(
-      r'^' + ShrineApp.homeRoute,
-      (context, match) => const StudyWrapper(study: ShrineApp()),
+      r'^/shrine',
+      (context, match) => DeferredWidget(
+          shrine.loadLibrary, () => StudyWrapper(study: shrine.ShrineApp())),
     ),
     Path(
-      r'^' + CraneApp.defaultRoute,
-      (context, match) => const StudyWrapper(study: CraneApp()),
+      r'^/crane',
+      (context, match) => DeferredWidget(
+          crane.loadLibrary, () => StudyWrapper(study: crane.CraneApp())),
     ),
     Path(
-      r'^' + FortnightlyApp.defaultRoute,
-      (context, match) => const StudyWrapper(study: FortnightlyApp()),
+      r'^/fortnightly',
+      (context, match) => DeferredWidget(fortnightly.loadLibrary,
+          () => StudyWrapper(study: fortnightly.FortnightlyApp())),
     ),
     Path(
-      r'^' + ReplyApp.homeRoute,
-      (context, match) => const StudyWrapper(
-        alignment: AlignmentDirectional.topCenter,
-        study: ReplyApp(),
-      ),
+      r'^/reply',
+      (context, match) => DeferredWidget(
+          reply.loadLibrary,
+          () => StudyWrapper(
+                alignment: AlignmentDirectional.topCenter,
+                study: reply.ReplyApp(),
+              )),
     ),
     Path(
-      r'^' + StarterApp.defaultRoute,
-      (context, match) => const StudyWrapper(study: StarterApp()),
+      r'^/starter',
+      (context, match) => DeferredWidget(
+          starter.loadLibrary, () => StudyWrapper(study: starter.StarterApp())),
     ),
     Path(
       r'^/',
@@ -117,5 +132,68 @@ class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
     Widget child,
   ) {
     return child;
+  }
+}
+
+/// Wrap the studies with this to display a back button and allow the user to
+/// exit them at any time.
+class StudyWrapper extends StatefulWidget {
+  const StudyWrapper({
+    Key key,
+    this.study,
+    this.alignment = AlignmentDirectional.bottomStart,
+  }) : super(key: key);
+
+  final Widget study;
+  final AlignmentDirectional alignment;
+
+  @override
+  _StudyWrapperState createState() => _StudyWrapperState();
+}
+
+class _StudyWrapperState extends State<StudyWrapper> {
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    return ApplyTextOptions(
+      child: Stack(
+        children: [
+          Semantics(
+            sortKey: const OrdinalSortKey(1),
+            child: widget.study,
+          ),
+          Align(
+            alignment: widget.alignment,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Semantics(
+                sortKey: const OrdinalSortKey(0),
+                //label: GalleryLocalizations.of(context).backToGallery,
+                button: true,
+                enabled: true,
+                excludeSemantics: true,
+                child: FloatingActionButton.extended(
+                  //heroTag: _BackButtonHeroTag(),
+                  key: const ValueKey('Back'),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .popUntil((route) => route.settings.name == '/');
+                  },
+                  icon: IconTheme(
+                    data: IconThemeData(color: colorScheme.onPrimary),
+                    child: const BackButtonIcon(),
+                  ),
+                  label: Text(
+                    MaterialLocalizations.of(context).backButtonTooltip,
+                    style: textTheme.button.apply(color: colorScheme.onPrimary),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -12,20 +12,21 @@ import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
 import 'package:gallery/constants.dart';
 import 'package:gallery/data/demos.dart';
 import 'package:gallery/data/gallery_options.dart';
+import 'package:gallery/deferred_widget.dart';
 import 'package:gallery/layout/adaptive.dart';
 import 'package:gallery/layout/image_placeholder.dart';
 import 'package:gallery/pages/category_list_item.dart';
 import 'package:gallery/pages/settings.dart';
 import 'package:gallery/pages/splash.dart';
-import 'package:gallery/studies/crane/app.dart';
+import 'package:gallery/studies/crane/app.dart' deferred as crane;
 import 'package:gallery/studies/crane/colors.dart';
-import 'package:gallery/studies/fortnightly/app.dart';
-import 'package:gallery/studies/rally/app.dart';
+import 'package:gallery/studies/fortnightly/app.dart' deferred as fortnightly;
+import 'package:gallery/studies/rally/app.dart' deferred as rally;
 import 'package:gallery/studies/rally/colors.dart';
-import 'package:gallery/studies/reply/app.dart';
-import 'package:gallery/studies/shrine/app.dart';
+import 'package:gallery/studies/reply/app.dart' deferred as reply;
+import 'package:gallery/studies/shrine/app.dart' deferred as shrine;
 import 'package:gallery/studies/shrine/colors.dart';
-import 'package:gallery/studies/starter/app.dart';
+import 'package:gallery/studies/starter/app.dart' deferred as starter;
 
 const _horizontalPadding = 32.0;
 const _carouselItemMargin = 8.0;
@@ -56,7 +57,7 @@ class HomePage extends StatelessWidget {
         ),
         assetDarkColor: const Color(0xFF1D2327),
         textColor: Colors.white,
-        studyRoute: ReplyApp.homeRoute,
+        studyRoute: '/reply',
       ),
       _CarouselCard(
         demo: studyDemos['shrine'],
@@ -71,7 +72,7 @@ class HomePage extends StatelessWidget {
         ),
         assetDarkColor: const Color(0xFF543B3C),
         textColor: shrineBrown900,
-        studyRoute: ShrineApp.loginRoute,
+        studyRoute: '/shrine/login',
       ),
       _CarouselCard(
         demo: studyDemos['rally'],
@@ -86,7 +87,7 @@ class HomePage extends StatelessWidget {
           package: 'flutter_gallery_assets',
         ),
         assetDarkColor: const Color(0xFF253538),
-        studyRoute: RallyApp.loginRoute,
+        studyRoute: '/rally/login',
       ),
       _CarouselCard(
         demo: studyDemos['crane'],
@@ -101,7 +102,7 @@ class HomePage extends StatelessWidget {
         ),
         assetDarkColor: const Color(0xFF591946),
         textColor: cranePurple700,
-        studyRoute: CraneApp.defaultRoute,
+        studyRoute: '/crane',
       ),
       _CarouselCard(
         demo: studyDemos['fortnightly'],
@@ -115,7 +116,7 @@ class HomePage extends StatelessWidget {
           package: 'flutter_gallery_assets',
         ),
         assetDarkColor: const Color(0xFF1F1F1F),
-        studyRoute: FortnightlyApp.defaultRoute,
+        studyRoute: '/fortnightly',
       ),
       _CarouselCard(
         demo: studyDemos['starterApp'],
@@ -130,7 +131,7 @@ class HomePage extends StatelessWidget {
         ),
         assetDarkColor: const Color(0xFF3F3D45),
         textColor: Colors.black,
-        studyRoute: StarterApp.defaultRoute,
+        studyRoute: '/starter',
       ),
     ];
 
@@ -1073,68 +1074,5 @@ double _carouselHeight(double scaleFactor, BuildContext context) => math.max(
         GalleryOptions.of(context).textScaleFactor(context) *
         scaleFactor,
     _carouselHeightMin);
-
-/// Wrap the studies with this to display a back button and allow the user to
-/// exit them at any time.
-class StudyWrapper extends StatefulWidget {
-  const StudyWrapper({
-    Key key,
-    this.study,
-    this.alignment = AlignmentDirectional.bottomStart,
-  }) : super(key: key);
-
-  final Widget study;
-  final AlignmentDirectional alignment;
-
-  @override
-  _StudyWrapperState createState() => _StudyWrapperState();
-}
-
-class _StudyWrapperState extends State<StudyWrapper> {
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    return ApplyTextOptions(
-      child: Stack(
-        children: [
-          Semantics(
-            sortKey: const OrdinalSortKey(1),
-            child: widget.study,
-          ),
-          Align(
-            alignment: widget.alignment,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Semantics(
-                sortKey: const OrdinalSortKey(0),
-                label: GalleryLocalizations.of(context).backToGallery,
-                button: true,
-                enabled: true,
-                excludeSemantics: true,
-                child: FloatingActionButton.extended(
-                  heroTag: _BackButtonHeroTag(),
-                  key: const ValueKey('Back'),
-                  onPressed: () {
-                    Navigator.of(context)
-                        .popUntil((route) => route.settings.name == '/');
-                  },
-                  icon: IconTheme(
-                    data: IconThemeData(color: colorScheme.onPrimary),
-                    child: const BackButtonIcon(),
-                  ),
-                  label: Text(
-                    MaterialLocalizations.of(context).backButtonTooltip,
-                    style: textTheme.button.apply(color: colorScheme.onPrimary),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _BackButtonHeroTag {}
