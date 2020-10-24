@@ -73,15 +73,24 @@ import 'package:gallery/demos/material/text_field_demo.dart'
     deferred as text_field_demo;
 import 'package:gallery/demos/material/tooltip_demo.dart'
     deferred as tooltip_demo;
-import 'package:gallery/demos/reference/motion_demo_container_transition.dart';
-import 'package:gallery/demos/reference/motion_demo_fade_through_transition.dart';
-import 'package:gallery/demos/reference/motion_demo_fade_scale_transition.dart';
-import 'package:gallery/demos/reference/motion_demo_shared_x_axis_transition.dart';
-import 'package:gallery/demos/reference/motion_demo_shared_y_axis_transition.dart';
-import 'package:gallery/demos/reference/motion_demo_shared_z_axis_transition.dart';
-import 'package:gallery/demos/reference/colors_demo.dart';
-import 'package:gallery/demos/reference/transformations_demo.dart';
-import 'package:gallery/demos/reference/typography_demo.dart';
+import 'package:gallery/demos/reference/motion_demo_container_transition.dart'
+    deferred as motion_demo_container_transition;
+import 'package:gallery/demos/reference/motion_demo_fade_through_transition.dart'
+    deferred as motion_demo_fade_through_transition;
+import 'package:gallery/demos/reference/motion_demo_fade_scale_transition.dart'
+    deferred as motion_demo_fade_scale_transition;
+import 'package:gallery/demos/reference/motion_demo_shared_x_axis_transition.dart'
+    deferred as motion_demo_shared_x_axis_transition;
+import 'package:gallery/demos/reference/motion_demo_shared_y_axis_transition.dart'
+    deferred as motion_demo_shared_y_axis_transition;
+import 'package:gallery/demos/reference/motion_demo_shared_z_axis_transition.dart'
+    deferred as motion_demo_shared_z_axis_transition;
+import 'package:gallery/demos/reference/colors_demo.dart'
+    deferred as colors_demo;
+import 'package:gallery/demos/reference/transformations_demo.dart'
+    deferred as transformations_demo;
+import 'package:gallery/demos/reference/typography_demo.dart'
+    deferred as typography_demo;
 import 'package:flutter_gen/gen_l10n/gallery_localizations.dart';
 import 'package:flutter_gen/gen_l10n/gallery_localizations_en.dart'
     show GalleryLocalizationsEn;
@@ -1155,7 +1164,10 @@ List<GalleryDemo> otherDemos(GalleryLocalizations localizations) {
           title: localizations.demoContainerTransformTitle,
           description: localizations.demoContainerTransformDescription,
           documentationUrl: '$_docsAnimationsUrl/OpenContainer-class.html',
-          buildRoute: (_) => const OpenContainerTransformDemo(),
+          buildRoute: (_) => DeferredWidget(
+              motion_demo_container_transition.loadLibrary,
+              () => motion_demo_container_transition
+                  .OpenContainerTransformDemo()),
           code: CodeSegments.openContainerTransformDemo,
         ),
         GalleryDemoConfiguration(
@@ -1163,7 +1175,10 @@ List<GalleryDemo> otherDemos(GalleryLocalizations localizations) {
           description: localizations.demoSharedAxisDescription,
           documentationUrl:
               '$_docsAnimationsUrl/SharedAxisTransition-class.html',
-          buildRoute: (_) => const SharedXAxisTransitionDemo(),
+          buildRoute: (_) => DeferredWidget(
+              motion_demo_shared_x_axis_transition.loadLibrary,
+              () => motion_demo_shared_x_axis_transition
+                  .SharedXAxisTransitionDemo()),
           code: CodeSegments.sharedXAxisTransitionDemo,
         ),
         GalleryDemoConfiguration(
@@ -1171,7 +1186,10 @@ List<GalleryDemo> otherDemos(GalleryLocalizations localizations) {
           description: localizations.demoSharedAxisDescription,
           documentationUrl:
               '$_docsAnimationsUrl/SharedAxisTransition-class.html',
-          buildRoute: (_) => const SharedYAxisTransitionDemo(),
+          buildRoute: (_) => DeferredWidget(
+              motion_demo_shared_y_axis_transition.loadLibrary,
+              () => motion_demo_shared_y_axis_transition
+                  .SharedYAxisTransitionDemo()),
           code: CodeSegments.sharedYAxisTransitionDemo,
         ),
         GalleryDemoConfiguration(
@@ -1179,7 +1197,10 @@ List<GalleryDemo> otherDemos(GalleryLocalizations localizations) {
           description: localizations.demoSharedAxisDescription,
           documentationUrl:
               '$_docsAnimationsUrl/SharedAxisTransition-class.html',
-          buildRoute: (_) => const SharedZAxisTransitionDemo(),
+          buildRoute: (_) => DeferredWidget(
+              motion_demo_shared_z_axis_transition.loadLibrary,
+              () => motion_demo_shared_z_axis_transition
+                  .SharedZAxisTransitionDemo()),
           code: CodeSegments.sharedZAxisTransitionDemo,
         ),
         GalleryDemoConfiguration(
@@ -1187,7 +1208,10 @@ List<GalleryDemo> otherDemos(GalleryLocalizations localizations) {
           description: localizations.demoFadeThroughDescription,
           documentationUrl:
               '$_docsAnimationsUrl/FadeThroughTransition-class.html',
-          buildRoute: (_) => const FadeThroughTransitionDemo(),
+          buildRoute: (_) => DeferredWidget(
+              motion_demo_fade_through_transition.loadLibrary,
+              () => motion_demo_fade_through_transition
+                  .FadeThroughTransitionDemo()),
           code: CodeSegments.fadeThroughTransitionDemo,
         ),
         GalleryDemoConfiguration(
@@ -1195,7 +1219,10 @@ List<GalleryDemo> otherDemos(GalleryLocalizations localizations) {
           description: localizations.demoFadeScaleDescription,
           documentationUrl:
               '$_docsAnimationsUrl/FadeScaleTransition-class.html',
-          buildRoute: (_) => const FadeScaleTransitionDemo(),
+          buildRoute: (_) => DeferredWidget(
+              motion_demo_fade_scale_transition.loadLibrary,
+              () =>
+                  motion_demo_fade_scale_transition.FadeScaleTransitionDemo()),
           code: CodeSegments.fadeScaleTransitionDemo,
         ),
       ],
@@ -1211,7 +1238,8 @@ List<GalleryDemo> otherDemos(GalleryLocalizations localizations) {
           title: localizations.demoColorsTitle,
           description: localizations.demoColorsDescription,
           documentationUrl: '$_docsBaseUrl/material/MaterialColor-class.html',
-          buildRoute: (_) => const ColorsDemo(),
+          buildRoute: (_) => DeferredWidget(
+              colors_demo.loadLibrary, () => colors_demo.ColorsDemo()),
           code: CodeSegments.colorsDemo,
         ),
       ],
@@ -1227,7 +1255,8 @@ List<GalleryDemo> otherDemos(GalleryLocalizations localizations) {
           title: localizations.demoTypographyTitle,
           description: localizations.demoTypographyDescription,
           documentationUrl: '$_docsBaseUrl/material/TextTheme-class.html',
-          buildRoute: (_) => const TypographyDemo(),
+          buildRoute: (_) => DeferredWidget(typography_demo.loadLibrary,
+              () => typography_demo.TypographyDemo()),
           code: CodeSegments.typographyDemo,
         ),
       ],
@@ -1243,7 +1272,8 @@ List<GalleryDemo> otherDemos(GalleryLocalizations localizations) {
           title: localizations.demo2dTransformationsTitle,
           description: localizations.demo2dTransformationsDescription,
           documentationUrl: '$_docsBaseUrl/widgets/GestureDetector-class.html',
-          buildRoute: (_) => const TransformationsDemo(),
+          buildRoute: (_) => DeferredWidget(transformations_demo.loadLibrary,
+              () => transformations_demo.TransformationsDemo()),
           code: CodeSegments.transformationsDemo,
         ),
       ],
