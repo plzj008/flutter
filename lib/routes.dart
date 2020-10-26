@@ -9,7 +9,7 @@ import 'package:gallery/data/gallery_options.dart';
 import 'package:gallery/deferred_widget.dart';
 import 'package:gallery/main.dart';
 import 'package:gallery/pages/demo.dart' deferred as demo;
-//import 'package:gallery/pages/home.dart';
+import 'package:gallery/pages/home.dart';
 import 'package:gallery/studies/crane/app.dart' deferred as crane;
 import 'package:gallery/studies/fortnightly/app.dart' deferred as fortnightly;
 import 'package:gallery/studies/rally/app.dart' deferred as rally;
@@ -132,68 +132,5 @@ class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
     Widget child,
   ) {
     return child;
-  }
-}
-
-/// Wrap the studies with this to display a back button and allow the user to
-/// exit them at any time.
-class StudyWrapper extends StatefulWidget {
-  const StudyWrapper({
-    Key key,
-    this.study,
-    this.alignment = AlignmentDirectional.bottomStart,
-  }) : super(key: key);
-
-  final Widget study;
-  final AlignmentDirectional alignment;
-
-  @override
-  _StudyWrapperState createState() => _StudyWrapperState();
-}
-
-class _StudyWrapperState extends State<StudyWrapper> {
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    return ApplyTextOptions(
-      child: Stack(
-        children: [
-          Semantics(
-            sortKey: const OrdinalSortKey(1),
-            child: widget.study,
-          ),
-          Align(
-            alignment: widget.alignment,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Semantics(
-                sortKey: const OrdinalSortKey(0),
-                //label: GalleryLocalizations.of(context).backToGallery,
-                button: true,
-                enabled: true,
-                excludeSemantics: true,
-                child: FloatingActionButton.extended(
-                  //heroTag: _BackButtonHeroTag(),
-                  key: const ValueKey('Back'),
-                  onPressed: () {
-                    Navigator.of(context)
-                        .popUntil((route) => route.settings.name == '/');
-                  },
-                  icon: IconTheme(
-                    data: IconThemeData(color: colorScheme.onPrimary),
-                    child: const BackButtonIcon(),
-                  ),
-                  label: Text(
-                    MaterialLocalizations.of(context).backButtonTooltip,
-                    style: textTheme.button.apply(color: colorScheme.onPrimary),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
